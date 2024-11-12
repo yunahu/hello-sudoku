@@ -1,7 +1,5 @@
 (() => {
 
-const serverURL = 'http://localhost:3000';
-
 // Global vars
 let currentGame = {
    id: null,
@@ -105,7 +103,7 @@ let currentGame = {
                timestamp: new Date(),
             }
    
-            const res = await fetch(`${serverURL}/sudoku/record`, {
+            const res = await fetch(`/sudoku/record`, {
                method: 'POST',
                headers: {
                   'Accept': 'application/json, text/plain, */*',
@@ -289,7 +287,7 @@ const toSection = (text) => {
 
 const login = async (loginUsername, loginPassword) => {
 
-   const res = await fetch(`${serverURL}/users/signin`, {
+   const res = await fetch(`/users/signin`, {
       headers: {
          'Accept': 'application/json, text/plain, */*',
          'Content-Type': 'application/json',
@@ -337,7 +335,7 @@ const login = async (loginUsername, loginPassword) => {
  */
 const fillUserInfo = async () => {
    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-   const res = await fetch(`${serverURL}/sudoku/records/${userInfo.username}`, {
+   const res = await fetch(`/sudoku/records/${userInfo.username}`, {
       headers: {
          'Accept': 'application/json, text/plain, */*',
          'Content-Type': 'application/json',
@@ -384,7 +382,7 @@ const register = async () => {
       return;
    }
 
-   const res = await fetch(`${serverURL}/users/signup`, {
+   const res = await fetch(`/users/signup`, {
       method: 'POST',
       headers: {
          'Accept': 'application/json, text/plain, */*',
@@ -409,7 +407,7 @@ const adminControl = async (cmd) => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const target = JSON.parse(localStorage.getItem('target'));
 
-            const res = await fetch(`${serverURL}/users/changeRole`, {
+            const res = await fetch(`/users/changeRole`, {
                method: 'POST',
                headers: {
                   'Accept': 'application/json, text/plain, */*',
@@ -436,7 +434,7 @@ const adminControl = async (cmd) => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const target = JSON.parse(localStorage.getItem('target'));
             if (target) {
-               const res = await fetch(`${serverURL}/users/delete`, {
+               const res = await fetch(`/users/delete`, {
                   method: 'DELETE',
                   headers: {
                      'Accept': 'application/json, text/plain, */*',
@@ -489,7 +487,7 @@ const exportUserData = (data, filename, type) => {
 
 const searchUser = async () => {
    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-   const res = await fetch(`${serverURL}/users/search/${searchUsername.value}`, {
+   const res = await fetch(`/users/search/${searchUsername.value}`, {
       headers: {
          'Accept': 'application/json, text/plain, */*',
          'Content-Type': 'application/json',
@@ -500,7 +498,7 @@ const searchUser = async () => {
    const searchResult = await res.json(); 
    localStorage.setItem('target', JSON.stringify(searchResult));
 
-   const recordsRes = await fetch(`${serverURL}/sudoku/records/${searchResult.username}`, {
+   const recordsRes = await fetch(`/sudoku/records/${searchResult.username}`, {
       headers: {
          'Accept': 'application/json, text/plain, */*',
          'Content-Type': 'application/json',
@@ -666,12 +664,12 @@ const fillGamePaneGrid = async (puzzle_id) => {
    let res;
 
    if (puzzle_id === "daily") {
-      res = await fetch(`${serverURL}/sudoku/puzzleOfTheDay`);
+      res = await fetch(`/sudoku/puzzleOfTheDay`);
       document.querySelector('#gameLevel').innerHTML = "Daily Sudoku";
       document
 
    } else {
-      res = await fetch(`${serverURL}/sudoku/${puzzle_id}`);
+      res = await fetch(`/sudoku/${puzzle_id}`);
       document.querySelector('#gameLevel').innerHTML = currentGame.levelCode;
 
    }

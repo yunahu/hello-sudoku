@@ -22,7 +22,7 @@ mongo.connect().then(async () => {
    console.log("Initializing puzzles...");
    await initialize();
    
-   app.listen(PORT, "localhost", () => {
+   app.listen(PORT, () => {
       console.log(`Server listening on http://localhost:${PORT}`)
    });
 });
