@@ -4,13 +4,14 @@ const usersController = require('../controllers/usersController');
 const sudokuController = require('../controllers/sudokuController');
 const { initialize } = require('../services/sudoku');
 const logger = require('../middlewares/logger');
-const app = express();
+const path = require('path');
 
-const PORT = 3000;
+const app = express();
+const PORT = process.env.PORT;
 
 process.on("unhandledRejection", error => console.log('Unhandled rejection', error));
 
-app.use(express.static("views"));
+app.use(express.static(path.join(__dirname, "../views")));
 app.use(express.json());
 
 app.use(logger);
