@@ -150,19 +150,16 @@ let currentGame = {
    },
 
    hint: function() {
-      let row;
+      let row = -1;
       let col;
 
-      for (let r = 0; r < 9; r++) {
-         for (let c = 0; c < 9; c++) {
-            if (this.puzzle[r][c] !== this.solution[r][c]) {
-               col = c;
-               row = r;
-               break
-            }
+      while (row === -1) {
+         const r = Math.floor(Math.random() * 9);
+         const c = Math.floor(Math.random() * 9);
+         if (this.puzzle[r][c] !== this.solution[r][c]) {
+            col = c;
+            row = r;
          }
-
-         if (col !== undefined) break;
       }
 
       const cell = this.cells[row][col];
