@@ -1,5 +1,5 @@
 {
-	"name": "hellosudoku",
+	"name": "hello-sudoku",
 	"version": "1.0.0",
 	"description": "Sudoku game website (Spring 2024 - CPSC 2600 Term Project)",
 	"main": "server.js",
@@ -11,7 +11,10 @@
 		"type": "git",
 		"url": "git+https://github.com/mgao08/HelloSudoku.git"
 	},
-	"author": "Monica Gao, Yuna Hu",
+	"contributors": [
+      "Monica Gao",
+      "Yuna Hu"
+   ],
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/mgao08/HelloSudoku/issues"
