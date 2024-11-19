@@ -2,7 +2,6 @@ const axios = require("axios");
 const { mongo } = require("../utils/db");
 const Puzzle = require("../models/puzzle");
 const { retryablePromise } = require("../utils/promise");
-const PuzzleForADay = require("../models/puzzleForADay");
 
 const SUDOKU_API_URL = "https://sudoku-api.vercel.app/api";
 
@@ -12,7 +11,37 @@ const sudokuAPI = axios.create({
 
 const newBoard = async limit => sudokuAPI.get(`/dosuku?query={newboard(limit:${limit}){grids{value,solution,difficulty}}}`).then(r => r.data.newboard.grids);
 
+const updatePuzzleOfTheDay = async () => {
+   try {
+      let puzzle;
+      while (!puzzle) {
+         const boards = await retryablePromise(() => newBoard(5), 5, 2000);
+         puzzle = boards.find(board => board.difficulty === 'Easy');
+      }
+      const puzzleOfTheDay = Puzzle(null, puzzle.value, puzzle.difficulty, puzzle.solution);
+      mongo.db().collection("puzzleOfTheDay").replaceOne({}, puzzleOfTheDay, { upsert: true });
+   } catch (error) {
+      console.error(error);
+   }
+};
+
+const scheduleMidnightUpdates = () => {
+   const today = new Date();
+   const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+   const timeToMidnight = tomorrow - today;
+
+   setTimeout(() => {
+      const dayInMilliSeconds = 24 * 60 * 60 * 1000;
+      setInterval(() => {
+         updatePuzzleOfTheDay();
+      }, dayInMilliSeconds);
+   }, timeToMidnight);
+}
+
 const initialize = async () => {
+   await updatePuzzleOfTheDay();
+   scheduleMidnightUpdates();
+
    const puzzles = await mongo.db().collection("puzzles").find({}).toArray();
    const difficulties = ['easy', 'medium', 'hard'];
    const firstIndex = {
@@ -47,17 +76,7 @@ const initialize = async () => {
 
 const fetchPuzzleOfTheDay = async () => {
    const puzzleOfTheDay = await mongo.db().collection("puzzleOfTheDay").find({}).toArray();
-   const today = new Date().toISOString().slice(0, 10); // e.g. '2024-04-09'
-   if (puzzleOfTheDay.length) {
-      if (puzzleOfTheDay[0].date === today) {
-         return puzzleOfTheDay[0];
-      } else {
-         const board = await newBoard(1);
-         const puzzle = board[0];
-         const puzzleOfTheDay = PuzzleForADay(today, puzzle.value, puzzle.difficulty, puzzle.solution);
-         return await mongo.db().collection("puzzleOfTheDay").replaceOne({}, puzzleOfTheDay, { upsert: true });
-      }
-   }
+   return puzzleOfTheDay[0];
 }
 
 const fetchPuzzleById = async (id) => {
